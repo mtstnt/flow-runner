@@ -67,10 +67,12 @@ export default function App() {
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => {
-      const hasSameSource = eds.filter(e => e.source == params.source).length > 0;
-      if (hasSameSource) {
-        return eds;
-      }
+      const hasSameSource = eds.filter(e => {
+        if (e.sourceHandle == "true" || e.sourceHandle == "false") return false;
+        return e.source == params.source;
+      }).length > 0;
+      console.log(hasSameSource);
+      if (hasSameSource) return eds;
       return addEdge({ 
         ...params, 
         markerEnd: {
@@ -92,7 +94,7 @@ export default function App() {
     const position = screenToFlowPosition({ x: event.clientX, y: event.clientY });
     const newNode = {
       id: `new-${draggedType?.type}-${Date.now()}`,
-      type: 'standard',
+      type: draggedType?.type,
       position,
       data: {
         label: draggedType?.type ?? 'untyped',

@@ -46,6 +46,11 @@ export default function EditorSidebar() {
                   <span className="text-sm">Declare</span>
                 </div>
               </SidebarMenuButton>
+              <SidebarMenuButton onClick={onCreateNode("if")} onDragStart={(event) => onDragStart(event, { type: "if", data: {} })} onDragEnd={() => setDraggedType(null)} draggable>
+                <div className="flex items-center space-x-2"><FaPrint size={16} />
+                  <span className="text-sm">If</span>
+                </div>
+              </SidebarMenuButton>
             </SidebarMenu>
             {/* <Collapsible defaultOpen className="group/collapsible">
               <CollapsibleTrigger>

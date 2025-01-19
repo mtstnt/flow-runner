@@ -6,11 +6,13 @@ import { Button } from "../ui/button";
 import { FaCog, FaCopy, FaTrash } from "react-icons/fa";
 import { HandleStyles } from "./BaseNode";
 import DeclareNode from "./DeclareNode";
+import IfNode from "./IfNode";
 
 export const nodeTypes = {
   start: StartNode,
   standard: PrintNode,
   declare: DeclareNode,
+  if: IfNode,
 };
 
 export function PrintNode(props: NodeProps) {
