@@ -29,7 +29,7 @@ export default function EditorSidebar() {
     <Sidebar>
       <SidebarHeader className="flex flex-row items-center justify-center space-x-2">
         <FaCodeBranch size={24} color={"green"} />
-        <h1 className="text-3xl font-bold text-green-800">xFlow</h1>
+        <h1 className="text-3xl font-bold text-green-800">Flow Runner</h1>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
