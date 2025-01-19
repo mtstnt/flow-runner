@@ -67,14 +67,10 @@ export default function App() {
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => {
-      const hasSameSource = eds.filter(e => {
-        if (e.sourceHandle == "true" || e.sourceHandle == "false") return false;
-        return e.source == params.source;
-      }).length > 0;
-      console.log(hasSameSource);
+      const hasSameSource = eds.find(v => v.sourceHandle == params.sourceHandle);
       if (hasSameSource) return eds;
       return addEdge({ 
-        ...params, 
+        ...params,
         markerEnd: {
           type: MarkerType.ArrowClosed,
           width: 20,

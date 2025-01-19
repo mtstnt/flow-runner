@@ -30,7 +30,10 @@ export default function DeclareNode(props: NodeProps) {
     }
     rf.setNodes(prev => [...prev, duplicateNode])
   };
-  const onDeleteNode = () => rf.setNodes(rf.getNodes().filter(n => n.id !== props.id));
+  const onDeleteNode = () => {
+    rf.setNodes(rf.getNodes().filter(n => n.id !== props.id));
+    rf.setEdges(rf.getEdges().filter(e => !e.source.startsWith(props.id) && !e.target.startsWith(props.id)));
+  }
 
   return (
     <div className="flex flex-row bg-white border-2 border-black w-[260px] rounded shadow">
@@ -41,7 +44,7 @@ export default function DeclareNode(props: NodeProps) {
         <Button size={"icon"} variant={'secondary'} onClick={onDuplicateNode}><FaCopy /></Button>
         <Button size={"icon"} variant={'destructive'} onClick={onDeleteNode}><FaTrash /></Button>
       </NodeToolbar>
-      <Handle type="target" style={HandleStyles} position={Position.Left} />
+      <Handle type="target" id={props.id + "_0"} style={HandleStyles} position={Position.Left} />
       <div className="w-full p-3 rounded-l">
         <h1 className="mb-2 text-lg font-bold">Declare</h1>
         {/* Render the declared variables as table */}
@@ -60,7 +63,7 @@ export default function DeclareNode(props: NodeProps) {
         </Dialog>
       </div>
       <div className="w-1/4 bg-yellow-600 rounded-r">
-        <Handle type="source" style={HandleStyles} position={Position.Right} />
+        <Handle type="source" id={props.id + "_1"} style={HandleStyles} position={Position.Right} />
       </div>
     </div>
   );
