@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { ComboBox } from "../custom/ComboBox";
-import { HandleStyles } from "./BaseNode";
+import { HandleStyles, SettingsToolbar } from "./BaseNode";
 import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { DialogFooter } from "../ui/dialog";
 
@@ -14,36 +14,15 @@ export type VariableDeclaration = {
 }
 
 export default function DeclareNode(props: NodeProps) {
-  const rf = useReactFlow();
   const [variables, setVariables] = useState<VariableDeclaration[]>((props.data['variables'] ?? []) as VariableDeclaration[]);
-
-  const onDuplicateNode = () => {
-    const thisNode: Node = rf.getNode(props.id)!;
-    const duplicateNode: Node = {
-      ...thisNode,
-      id: `${thisNode.id}-duplicate`,
-      selected: false,
-      position: {
-        x: thisNode.position.x + 100,
-        y: thisNode.position.y + 100,
-      },
-    }
-    rf.setNodes(prev => [...prev, duplicateNode])
+  const onSaveButtonClicked = (newVariables: VariableDeclaration[]) => {
+    setVariables(newVariables);
+    props.data['variables'] = newVariables;
   };
-  const onDeleteNode = () => {
-    rf.setNodes(rf.getNodes().filter(n => n.id !== props.id));
-    rf.setEdges(rf.getEdges().filter(e => !e.source.startsWith(props.id) && !e.target.startsWith(props.id)));
-  }
 
   return (
     <div className="flex flex-row bg-white border-2 border-black w-[260px] rounded shadow">
-      <NodeToolbar offset={0} className="flex flex-row items-center p-1 space-x-2 bg-black rounded-t-lg rounded-br-lg" position={Position.Top} align={"end"}>
-        <div className="px-1">
-          <FaCog color={"white"} />
-        </div>
-        <Button size={"icon"} variant={'secondary'} onClick={onDuplicateNode}><FaCopy /></Button>
-        <Button size={"icon"} variant={'destructive'} onClick={onDeleteNode}><FaTrash /></Button>
-      </NodeToolbar>
+      <SettingsToolbar id={props.id} />
       <Handle type="target" id={props.id + "_0"} style={HandleStyles} position={Position.Left} />
       <div className="w-full p-3 rounded-l">
         <h1 className="mb-2 text-lg font-bold">Declare</h1>
@@ -59,7 +38,7 @@ export default function DeclareNode(props: NodeProps) {
           <DialogTrigger asChild>
             <Button className="w-full" variant="default">Edit</Button>
           </DialogTrigger>
-          <DeclareNodeModal variables={variables} setVariables={setVariables} />
+          <DeclareNodeModal variables={variables} onSaveButtonClicked={onSaveButtonClicked} />
         </Dialog>
       </div>
       <div className="w-1/4 bg-yellow-600 rounded-r">
@@ -71,7 +50,7 @@ export default function DeclareNode(props: NodeProps) {
 
 type DeclareNodeModalProps = {
   variables: VariableDeclaration[];
-  setVariables: React.Dispatch<React.SetStateAction<VariableDeclaration[]>>;
+  onSaveButtonClicked: (newVariables: VariableDeclaration[]) => void;
 }
 
 const variableTypeOptions = [
@@ -80,21 +59,19 @@ const variableTypeOptions = [
   { label: 'Boolean', value: 'boolean' },
 ];
 
-function DeclareNodeModal({ variables, setVariables }: DeclareNodeModalProps) {
+function DeclareNodeModal({ variables, onSaveButtonClicked }: DeclareNodeModalProps) {
   const [localVariables, setLocalVariables] = useState<VariableDeclaration[]>(variables);
 
   const editVariableValue = (index: number, key: string, value: string) => {
     setLocalVariables(prev => {
       const currentVariable = prev[index];
       const removedValue = prev.filter((_, i) => i !== index);
-      currentVariable[key as keyof VariableDeclaration] = value as any;
+      currentVariable[key as keyof VariableDeclaration] = value as "string" | "number" | "boolean";
       return [...removedValue, currentVariable];
     })
   };
-  
-  const onSaveClicked = () => {
-    setVariables(localVariables);
-  }
+
+  const onSaveClicked = () => onSaveButtonClicked(localVariables);
 
   return (
     <DialogContent className="w-screen">

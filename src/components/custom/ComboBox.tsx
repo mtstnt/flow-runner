@@ -16,11 +16,12 @@ type Props = {
     value: string;
   }[];
   onOptionSelected: (option: string) => void;
+  initialValue?: string;
 };
 
-export function ComboBox({ options, onOptionSelected }: Props) {
+export function ComboBox({ options, onOptionSelected, initialValue }: Props) {
   const [open, setOpen] = useState(false)
-  const [value, setValue] = useState("")
+  const [value, setValue] = useState(initialValue || "")
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -33,15 +34,15 @@ export function ComboBox({ options, onOptionSelected }: Props) {
         >
           {value
             ? options.find((option) => option.value === value)?.label
-            : "Select option..."}
+            : "Select type..."}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full">
         <Command className="w-full">
-          <CommandInput placeholder="Search framework..." className="h-9" />
+          <CommandInput placeholder="Search types..." className="h-9" />
           <CommandList>
-            <CommandEmpty>No framework found.</CommandEmpty>
+            <CommandEmpty>No type found.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem

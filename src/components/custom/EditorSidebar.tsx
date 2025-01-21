@@ -2,8 +2,31 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGrou
 import { DnDContext, DraggedData } from "../../contexts/DnDContext";
 import { DragEvent, useContext } from "react";
 import { useReactFlow } from "@xyflow/react";
-import { nodeTypes } from "../nodes/DefaultNode";
+import { nodeTypes } from "../nodes/BaseNode";
 import { FaCodeBranch, FaPrint } from "react-icons/fa";
+
+const sidebarMenus = [
+  {
+    label: "Print",
+    icon: <FaPrint />,
+    type: "print",
+  },
+  {
+    label: "Declare",
+    icon: <FaPrint />,
+    type: "declare",
+  },
+  {
+    label: "If",
+    icon: <FaPrint />,
+    type: "if",
+  },
+  {
+    label: "Assign",
+    icon: <FaPrint />,
+    type: "assign",
+  },
+];
 
 export default function EditorSidebar() {
   const rf = useReactFlow();
@@ -13,7 +36,7 @@ export default function EditorSidebar() {
     event.dataTransfer.effectAllowed = 'move';
     event.dataTransfer.setDragImage(new Image(), 0, 0);
   };
-  
+
   const onCreateNode = (nodeType: keyof typeof nodeTypes) => {
     return (_: React.MouseEvent<HTMLElement>) => {
       rf.addNodes({
@@ -24,7 +47,7 @@ export default function EditorSidebar() {
       });
     }
   }
-  
+
   return (
     <Sidebar>
       <SidebarHeader className="flex flex-row items-center justify-center space-x-2">
@@ -36,21 +59,13 @@ export default function EditorSidebar() {
           <SidebarGroupLabel>Components</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuButton onClick={onCreateNode("standard")} onDragStart={(event) => onDragStart(event, { type: "print", data: {} })} onDragEnd={() => setDraggedType(null)} draggable>
-                <div className="flex items-center space-x-2"><FaPrint size={16} />
-                  <span className="text-sm">Print</span>
-                </div>
-              </SidebarMenuButton>
-              <SidebarMenuButton onClick={onCreateNode("declare")} onDragStart={(event) => onDragStart(event, { type: "declare", data: {} })} onDragEnd={() => setDraggedType(null)} draggable>
-                <div className="flex items-center space-x-2"><FaPrint size={16} />
-                  <span className="text-sm">Declare</span>
-                </div>
-              </SidebarMenuButton>
-              <SidebarMenuButton onClick={onCreateNode("if")} onDragStart={(event) => onDragStart(event, { type: "if", data: {} })} onDragEnd={() => setDraggedType(null)} draggable>
-                <div className="flex items-center space-x-2"><FaPrint size={16} />
-                  <span className="text-sm">If</span>
-                </div>
-              </SidebarMenuButton>
+              {sidebarMenus.map((menu, index) => (
+                <SidebarMenuButton key={index} onClick={onCreateNode(menu.type as keyof typeof nodeTypes)} onDragStart={(event) => onDragStart(event, { type: menu.type, data: {} })} onDragEnd={() => setDraggedType(null)} draggable>
+                    <div className="flex items-center space-x-2">{menu.icon}
+                      <span className="text-sm">{menu.label}</span>
+                  </div>
+                </SidebarMenuButton>
+              ))}
             </SidebarMenu>
             {/* <Collapsible defaultOpen className="group/collapsible">
               <CollapsibleTrigger>

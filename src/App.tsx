@@ -18,7 +18,8 @@ import EditorSidebar from './components/custom/EditorSidebar';
 import { DnDContext } from './contexts/DnDContext';
 import TopBar from './components/custom/TopBar';
 import CanvasContextMenu from './components/custom/CanvasContextMenu';
-import { nodeTypes } from './components/nodes/DefaultNode';
+import { nodeTypes } from './components/nodes/BaseNode';
+import { evaluate } from './lib/evaluator';
 
 type ContextMenuData = {
   type: 'node' | 'edge';
@@ -67,9 +68,8 @@ export default function App() {
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => {
-      const hasSameSource = eds.find(v => v.sourceHandle == params.sourceHandle);
-      if (hasSameSource) return eds;
-      return addEdge({ 
+      eds = eds.filter(v => v.sourceHandle !== params.sourceHandle);
+      eds = addEdge({
         ...params,
         markerEnd: {
           type: MarkerType.ArrowClosed,
@@ -82,6 +82,7 @@ export default function App() {
           stroke: '#FF0072',
         },
       }, eds);
+      return eds;
     }),
     [setEdges],
   );
@@ -114,18 +115,24 @@ export default function App() {
       setContextMenu({ type: 'node', node, position });
     }
   }, []);
-  
+
   const onEdgeContextMenu = useCallback((event: MouseEvent, edge: Edge) => {
     event.preventDefault();
     const position = { x: event.clientX, y: event.clientY };
     setContextMenu({ type: 'edge', edge, position });
   }, []);
-  
+
+  const onPlayButtonClick = () => {
+    const nodeTree = getNodeTree(nodes, edges);
+    console.log(nodeTree);
+    evaluate(new Map(), nodeTree);
+  };
+
   return (
     <Fragment>
       <EditorSidebar />
       <div className="flex flex-col w-full">
-        <TopBar onPlayButtonClick={() => { console.log("All nodes: ", getNodeTree(nodes, edges)) }} />
+        <TopBar onPlayButtonClick={onPlayButtonClick} />
         <div className="w-full h-[calc(100vh-52px)]">
           <ReactFlow
             nodeTypes={nodeTypes}

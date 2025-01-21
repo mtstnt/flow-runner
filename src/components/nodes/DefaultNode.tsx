@@ -1,51 +1,15 @@
-import { Handle, Node } from "@xyflow/react";
-import { NodeProps, NodeToolbar, Position, useReactFlow } from "@xyflow/react";
+import { Handle } from "@xyflow/react";
+import { NodeProps, Position } from "@xyflow/react";
 import { Input } from "../ui/input";
 import { useState } from "react";
-import { Button } from "../ui/button";
-import { FaCog, FaCopy, FaTrash } from "react-icons/fa";
-import { HandleStyles } from "./BaseNode";
-import DeclareNode from "./DeclareNode";
-import IfNode from "./IfNode";
-
-export const nodeTypes = {
-  start: StartNode,
-  standard: PrintNode,
-  declare: DeclareNode,
-  if: IfNode,
-};
+import { HandleStyles, SettingsToolbar } from "./BaseNode";
 
 export function PrintNode(props: NodeProps) {
-  const rf = useReactFlow();
   const [input, setInput] = useState((props.data['value'] ?? '') as string);
-
-  const onDuplicateNode = () => {
-    const thisNode: Node = rf.getNode(props.id)!;
-    const duplicateNode: Node = {
-      ...thisNode,
-      id: `${thisNode.id}-duplicate`,
-      selected: false,
-      position: {
-        x: thisNode.position.x + 100,
-        y: thisNode.position.y + 100,
-      },
-    }
-    rf.setNodes(prev => [...prev, duplicateNode])
-  };
-  const onDeleteNode = () => {
-    rf.setNodes(rf.getNodes().filter(n => n.id !== props.id));
-    rf.setEdges(rf.getEdges().filter(e => !e.source.startsWith(props.id) && !e.target.startsWith(props.id)));
-  }
 
   return (
     <div className="flex flex-row bg-white border-2 border-black w-[260px] rounded shadow">
-      <NodeToolbar offset={0} className="flex flex-row items-center p-1 space-x-2 bg-black rounded-t-lg rounded-br-lg" position={Position.Top} align={"end"}>
-        <div className="px-1">
-          <FaCog color={"white"} />
-        </div>
-        <Button size={"icon"} variant={'secondary'} onClick={onDuplicateNode}><FaCopy /></Button>
-        <Button size={"icon"} variant={'destructive'} onClick={onDeleteNode}><FaTrash /></Button>
-      </NodeToolbar>
+      <SettingsToolbar id={props.id} />
       <Handle type="target" id={props.id + "_0"} style={HandleStyles} position={Position.Left} />
       <div className="w-full p-3 rounded-l">
         <h1 className="mb-2 text-lg font-bold">Print</h1>
